@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monthly Parking Report</title>
+    <style>
+        body { font-family: sans-serif; color: #333; }
+        .container { width: 90%; margin: 0 auto; }
+        .header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h1 { margin: 0; color: #0d6efd; }
+        .summary { background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: flex; justify-content: space-around; }
+        .summary-item { text-align: center; }
+        .summary-item h3 { margin: 0 0 5px 0; font-size: 1.5em; }
+        .summary-item p { margin: 0; color: #6c757d; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #0d6efd; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .footer { text-align: center; margin-top: 30px; font-size: 0.8em; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Vehicle Parking App</h1>
+            <p>Your Monthly Parking Activity Report for {{ report_month }}</p>
+        </div>
+        
+        <h2>Hi, {{ user.username }}!</h2>
+        <p>Here's a summary of your parking activity. We hope to see you again soon!</p>
+        
+        <div class="summary">
+            <div class="summary-item">
+                <h3>${{ "%.2f"|format(total_spent) }}</h3>
+                <p>Total Spent</p>
+            </div>
+            <div class="summary-item">
+                <h3>{{ reservations|length }}</h3>
+                <p>Total Parkings</p>
+            </div>
+        </div>
+
+        <h3>Detailed History</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Lot Name</th>
+                    <th>Parked On</th>
+                    <th>Released On</th>
+                    <th>Duration (Hrs)</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reservations %}
+                    {% for res in reservations %}
+                    <tr>
+                        <td>{{ res.lot_name }}</td>
+                        <td>{{ res.parking_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>{{ res.leaving_time.strftime('%Y-%m-%d %H:%M') if res.leaving_time != 'Active' else 'Active' }}</td>
+                        <td>{{ res.duration_hours }}</td>
+                        <td>${{ "%.2f"|format(res.cost) if res.cost else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center;">No parking activity recorded for this period.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            <p>Thank you for using our service!</p>
+        </div>
+    </div>
+</body>
+</html>
